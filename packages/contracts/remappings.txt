@@ -1,0 +1,4 @@
+@prb/test/=lib/prb-test/src/
+forge-std/=lib/forge-std/src/
+@openzeppelin/=node_modules/@openzeppelin/
+@ethereum-attestation-service/=node_modules/@ethereum-attestation-service/

@@ -1,0 +1,36 @@
+{
+  "name": "contracts",
+  "description": "Foundry-based template for developing Solidity smart contracts",
+  "version": "1.0.0",
+  "author": {
+    "name": "Paul Razvan Berg",
+    "url": "https://github.com/PaulRBerg"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "solhint-community": "^3.6.0"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "forge",
+    "foundry",
+    "smart-contracts",
+    "solidity",
+    "template"
+  ],
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf cache out",
+    "lint": "pnpm lint:sol && pnpm prettier:check",
+    "lint:sol": "forge fmt --check && pnpm solhint {script,src,test}/**/*.sol",
+    "build:flatten": "forge flatten --output src/MicroGrantPool.flattened.sol src/MicroGrantPool.sol",
+    "build": "pnpm build:flatten && forge create --rpc-url $RPC_ENDPOINT_URL --private-key  $DEPLOYER_PRIVATE_KEY  src/MicroGrantPool.flattened.sol:MicroGrantPool --verify --constructor-args \"[0x4513e09002228b6F9bfac47CFaA0c58D5227a0a3,0xB2E3e8e62d5cb7edDAEb2B7956B6A908Fe9591F6]\" \"[70,30]\"",
+    "prettier:check": "prettier --check **/*.{json,md,yml} --ignore-path=.prettierignore",
+    "prettier:write": "prettier --write **/*.{json,md,yml} --ignore-path=.prettierignore"
+  },
+  "dependencies": {
+    "@ethereum-attestation-service/eas-contracts": "1.0.0-beta.0",
+    "@openzeppelin/contracts": "^4.9.3"
+  }
+}
