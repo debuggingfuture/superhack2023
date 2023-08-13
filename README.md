@@ -1,6 +1,12 @@
-# Turborepo Tailwind CSS starter
+# AutoMicroGrant
 
-This is an official starter Turborepo.
+-   [Ethglobal Superhack project](https://ethglobal.com/showcase/automicrogrant-0g0b7)
+
+## Deployed Contracts
+
+-   [Optimism Goerli](https://goerli-optimism.etherscan.io/address/0xa94634ef7d439a137162dd56f8e66cdb812d3d3c)
+-   [Base Goerli](https://goerli.basescan.org/address/0xef3dda63b41fadc84dbcc25735bbcbf185617a05)
+-   [Zora Goerli](https://testnet.explorer.zora.energy/tx/0xe152f7d943b039a8ebab1e02bf60e0b41c0b09fab7a4a1821a7bf0f25448256f)
 
 ## Using this example
 
@@ -16,11 +22,11 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+-   `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
+-   `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
+-   `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
+-   `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+-   `tsconfig`: `tsconfig.json`s used throughout the monorepo
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
@@ -45,7 +51,7 @@ For example, in [tailwind.config.js](packages/tailwind-config/tailwind.config.js
 
 This Turborepo has some additional tools already setup for you:
 
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+-   [Tailwind CSS](https://tailwindcss.com/) for styles
+-   [TypeScript](https://www.typescriptlang.org/) for static type checking
+-   [ESLint](https://eslint.org/) for code linting
+-   [Prettier](https://prettier.io) for code formatting
