@@ -115,19 +115,16 @@ export const registerAttestationSchema = async () => {
     console.log('easscanUrl', easscanUrl + '/schema/view/' + schemaUid);
 };
 
-// export const timestampAttestation = (eas, attestation) => {
-//     eas.timestampAttestation(attestation);
-// };
-
 // got everything we need, attest for grant
-export const attestAggregated = async (recipient: string) => {
+export const attestAggregated = async (
+    poolAddress: string,
+    attestorAddress: string,
+    recipient: string
+) => {
     const signer = getSigner();
 
     const eas = new EAS(easContractAddress);
     eas.connect(signer);
-
-    const poolAddress = '0xa94634ef7d439a137162dd56f8e66cdb812d3d3c';
-    const attestorAddress = '0x7CdE8D9aFC02268C847fF43BA976e7E6020C1222';
 
     const { schemaUid, encodedData } = encodeDataWithSchema(
         poolAddress,
@@ -138,7 +135,13 @@ export const attestAggregated = async (recipient: string) => {
 
     // await attestOffchain({ eas, signer, targetAddress, schemaUid, encodedData });
 
-    await attestOnChain({ eas, signer, recipient, schemaUid, encodedData });
+    return attestOnChain({
+        eas,
+        signer,
+        recipient,
+        schemaUid,
+        encodedData,
+    });
 };
 
 export const attestOnChain = async ({
