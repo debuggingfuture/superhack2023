@@ -1,12 +1,7 @@
-export const config = {
+const config = {
     api: {
         externalResolver: true,
     },
-};
-
-export type VerifyReply = {
-    code: string;
-    detail: string;
 };
 
 const verifyEndpoint = `${process.env.NEXT_PUBLIC_WLD_API_BASE_URL}/api/v1/verify/${process.env.NEXT_PUBLIC_WLD_APP_ID}`;

@@ -258,7 +258,7 @@ function Home() {
                 {
                   worldCoinResult ? (
                     <div className="text-green-500 text-2xl">
-                      You're qualified to attest!
+                      You are qualified to attest!
                     </div>
                   ) : (
                     <WorldCoinWidget addProof={addProof} /
@@ -310,7 +310,7 @@ function Home() {
 
             <div className="rounded border border-white p-10">
               <h3 className="text-2xl">
-                ☑️ Token balance > 0.01 ETH: +30 Optional
+                ☑️ Token balance {'>'} 0.01 ETH: +30 Optional
               </h3>
               {
                 !address || isBalanceLoading && (
@@ -327,16 +327,7 @@ function Home() {
                   </>
                 )
               }
-
-
-
-
             </div>
-
-
-
-
-
 
           </div>
 
@@ -400,10 +391,6 @@ function Home() {
             </form>
 
           </div>
-          {/* <Button>
-            Attestor
-          </Button> */}
-
 
         </section>
 
@@ -413,7 +400,6 @@ function Home() {
 }
 
 
-// https://github.com/ourzora/nft-hooks/blob/main/src/backends/zdk/utils/getChainFromNetwork.ts#L4
 export default function App() {
   const strategy = Strategies.ZDKFetchStrategy
   const zdkStrategy = new strategy('1');

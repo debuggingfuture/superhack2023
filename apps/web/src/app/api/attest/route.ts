@@ -5,12 +5,6 @@ import { queryBalance } from '../covalent';
 import { WLD_ACTION_NAME } from '../../webapp.config';
 import { attestAggregated } from 'reputation';
 
-export const config = {
-    api: {
-        externalResolver: true,
-    },
-};
-
 export async function POST(req: Request) {
     const body = await req.json();
     console.log('body', body);
