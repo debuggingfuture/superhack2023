@@ -123,6 +123,7 @@ const WorldCoinWidget = ({ addProof }) => {
 function Home() {
   const [score, setScore] = useState(0);
 
+  const [attestState, setAttestState] = useState(null);
 
 
   const [proofs, setProofs] = useState([]);
@@ -133,6 +134,7 @@ function Home() {
 
   const { address } = useAccount();
 
+  const [recipient, setRecipient] = useState('');
 
   const { data: balanceData, isError, isLoading: isBalanceLoading } = useBalance({
     address
@@ -140,14 +142,27 @@ function Home() {
 
   const { data: nftData, error } = useNFT('0x9fa2f3c62968119398d258d3ef8b34e050b997db', '1')
 
-  console.log('error', error);
+  // console.log('error', error);
 
-  const attestWithProofs = () => {
+  const attestWithProofs = async () => {
+
+    setAttestState('attesting');
+
+    const results = await invokeApi('/api/attest', {
+      attestorAddress: address,
+      recipient,
+      proofs
+    });
+
+    const data = await results.json();
+    console.log('results', data)
+
+    setAttestState(data);
 
   }
 
   const onClickAttest = () => {
-
+    attestWithProofs();
   }
 
   const worldCoinResult = useMemo(() => {
@@ -156,7 +171,7 @@ function Home() {
 
   useEffect(() => {
 
-    if (!isBalanceLoading && balanceData?.value > 100000000000n) {
+    if (!isBalanceLoading && balanceData?.value > 10000000000n) {
       addProof({
         type: 'balance',
         value: 30
@@ -164,13 +179,13 @@ function Home() {
     }
 
     // backend will verify
-  }, [isBalanceLoading])
+  }, [address, isBalanceLoading])
 
   useEffect(() => {
 
     setScore(_.sumBy(proofs, p => p.value));
     // backend will verify
-  }, [proofs?.length])
+  }, [address, proofs?.length])
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2 text-white">
@@ -185,8 +200,8 @@ function Home() {
         <section className="m-5">
 
           <div className="text-white underline text-4xl mb-4">
-            <Link href="https://goerli-optimism.etherscan.io/address/0x37bc88f16e2ac014085feb977ce167fd9c6158639b6e79c027ce22de2455ada2" target="_blank">
-              MicroGrant Contract: 0x123
+            <Link href="https://goerli-optimism.etherscan.io/address/0xb681785a3157a94ad2f615071d0503eda5d37229" target="_blank">
+              MicroGrant Contract: 0xa94634ef7d439a137162dd56f8e66cdb812d3d3c
             </Link>
           </div>
 
@@ -199,7 +214,7 @@ function Home() {
             <div>0x4513e09002228b6F9bfac47CFaA0c58D5227a0a3</div>
             <div>10</div>
             {/* <div> Y</div> */}
-            <div>0x4513e09002228b6F9bfac47CFaA0c58D5227a0a3</div>
+            <div>0xB2E3e8e62d5cb7edDAEb2B7956B6A908Fe9591F6</div>
             <div>20</div>
 
           </div>
@@ -222,7 +237,8 @@ function Home() {
 
 
             <h3 className="text-2xl">
-              Connect your wallet and we will check if you fulfil the criteria
+              Connect your wallet and we will check if you fulfil the criteria <br />
+              You need score greater than 25 to be attesting!
             </h3>
 
             <div className="mx-auto mt-5 max-w-xl sm:flex sm:justify-center md:mt-8 m-10">
@@ -286,7 +302,11 @@ function Home() {
 
             </div>
 
-            {/* 0x45187736a54d60c80b6e16e8d8e79ef0ba09d6a7 */}
+            <div className="rounded border border-white p-10">
+              <h3 className="text-2xl">
+                ☑️ Attested by one of the DAO member: +20 Optional
+              </h3>
+            </div>
 
             <div className="rounded border border-white p-10">
               <h3 className="text-2xl">
@@ -324,7 +344,7 @@ function Home() {
 
         <section className="mt-20 mb-20">
           <h3 className="text-2xl">Proofs</h3>
-          <code className="w-1/2 break-all">
+          <code className="w-1/2 break-all bg-gray-400">
             {JSON.stringify(proofs, null, 2)}
           </code>
         </section>
@@ -339,17 +359,43 @@ function Home() {
           <div className="w-full rounded border border-white p-10">
             <form className="shadow-md rounded px-8 pt-6 pb-8 mb-4">
               <div className="mb-4">
-                <label className="block text-white text-lg font-bold mb-2" htmlFor="receipent">
-                  receipent
+                <label className="block text-white text-lg font-bold mb-2" htmlFor="recipient">
+                  Recipient
                 </label>
-                <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="receipent" type="text" placeholder="receipent address" />
+                <input onChange={(event) => setRecipient(event.target.value)} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="recipient" type="text" placeholder="receipent address" />
               </div>
 
               <div className="flex items-center justify-between">
-                <button className="!bg-blue-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
-                  Attest
-                </button>
+                {
+                  !attestState && (
+                    <button onClick={() => onClickAttest()} className="!bg-blue-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                      Attest
+                    </button>
 
+                  )
+                }
+
+                {
+                  attestState === 'attesting' && (
+                    <button disabled className="!bg-blue-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                      Attesting...
+                    </button>
+                  )
+                }
+
+                {
+                  attestState?.uid && (
+                    <div>
+                      <Link target="_blank" href="https://optimism-goerli-bedrock.easscan.org/attestation/view/0xcdecd7e508426a8151bbdbcc67ad2820e94886c223c12b0fcf2bf1b201b5f145">
+                        Attested!
+                        <br />
+                        <span className="underline">
+                          View on EASSCAN
+                        </span>
+                      </Link>
+                    </div>
+                  )
+                }
               </div>
             </form>
 

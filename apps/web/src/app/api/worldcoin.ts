@@ -1,20 +1,8 @@
-export const config = {
-    api: {
-        externalResolver: true,
-    },
-};
+import { WLD_API_BASE_URL, WLD_APP_ID } from '../webapp.config';
 
-export type VerifyReply = {
-    code: string;
-    detail: string;
-};
+const verifyEndpoint = `${WLD_API_BASE_URL}/api/v1/verify/${WLD_APP_ID}`;
 
-const verifyEndpoint = `${process.env.NEXT_PUBLIC_WLD_API_BASE_URL}/api/v1/verify/${process.env.NEXT_PUBLIC_WLD_APP_ID}`;
-
-import { NextResponse } from 'next/server';
-
-export async function POST(req: Request) {
-    const body = await req.json();
+export const verifyWithWorldCoin = async (body) => {
     console.log('Received request to verify credential:\n', body);
     const reqBody = {
         nullifier_hash: body.nullifier_hash,
@@ -25,14 +13,14 @@ export async function POST(req: Request) {
         signal: body.signal,
     };
     console.log('Sending request to World ID /verify endpoint:\n', reqBody);
-    fetch(verifyEndpoint, {
+    return fetch(verifyEndpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(reqBody),
     }).then((verifyRes) => {
-        verifyRes.json().then((wldResponse) => {
+        return verifyRes.json().then((wldResponse) => {
             console.log(
                 `Received ${verifyRes.status} response from World ID /verify endpoint:\n`,
                 wldResponse
@@ -53,7 +41,7 @@ export async function POST(req: Request) {
                 //     detail: 'This action verified correctly!',
                 // });
 
-                return NextResponse.json(results);
+                return results;
                 //   resolve(void 0);
             } else {
                 // This is where you should handle errors from the World ID /verify endpoint. Usually these errors are due to an invalid credential or a credential that has already been used.
@@ -63,14 +51,8 @@ export async function POST(req: Request) {
                 //     detail: wldResponse.detail,
                 // });
 
-                return NextResponse.json(
-                    { error: 'Worldcoin verification Error' },
-                    { status: 500 }
-                );
+                return { error: 'Worldcoin verification Error' };
             }
         });
     });
-    return NextResponse.json({
-        error: 'Worldcoin verification Error',
-    });
-}
+};

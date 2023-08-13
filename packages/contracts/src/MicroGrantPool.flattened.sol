@@ -1290,11 +1290,12 @@ contract MicroGrantPool is Context {
     require(eas.isAttestationValid(attest_uid), "PaymentSplitter: Attestation is not valid");
 
     require(
-      eas.getAttestation(attest_uid).schema != 0xf5a986ee06d4fbace843ad0a2c02c7fd87153db91e5a8e8d6ec413480121e6da,
+      eas.getAttestation(attest_uid).schema ==
+        bytes32(0x233e16af3559cd70e7483d216a6274e91a9678111230453085d2c712d7819d42),
       "PaymentSplitter: Attestation schema incorrect"
     );
 
-    require(eas.getAttestation(attest_uid).recipient != account, "PaymentSplitter: Attestation receipent incorrect");
+    require(eas.getAttestation(attest_uid).recipient == account, "PaymentSplitter: Attestation receipent incorrect");
 
     uint256 payment = releasable(account);
 

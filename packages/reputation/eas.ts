@@ -12,6 +12,7 @@ import {
     EAS_CONTRACT_ADDRESS_OPTIMISM,
     EAS_CONTRACT_ADDRESS_OPTIMISM_GOERLI,
     EAS_CONTRACT_ADDRESS_SCHEMA_REGISTRY_BASE,
+    EAS_CONTRACT_ADDRESS_SCHEMA_REGISTRY_OPTIMISM,
     EAS_CONTRACT_ADDRESS_SCHEMA_REGISTRY_OPTIMISM_GOERLI,
 } from './app.config';
 import {
@@ -22,6 +23,14 @@ import {
 } from '@ethereum-attestation-service/eas-sdk';
 export const getNetworkConfig = (chainId: number) => {
     return {
+        10: {
+            easContractAddress: EAS_CONTRACT_ADDRESS_OPTIMISM,
+            easSchemaRegistryAddress:
+                EAS_CONTRACT_ADDRESS_SCHEMA_REGISTRY_OPTIMISM,
+            easscanUrl: 'https://optimism.easscan.org',
+            etherscanUrl: 'https://optimistic.etherscan.io',
+        },
+
         // 'optimistic-goerli'
         420: {
             easContractAddress: EAS_CONTRACT_ADDRESS_OPTIMISM_GOERLI,
@@ -58,28 +67,24 @@ export const getSigner = () => {
     return new ethers.Wallet(privateKey, provider);
 };
 
-const ATTESTATION_SCHEMA = 'uint256 poolId, uint256 shares, address[] refIds';
+const ATTESTATION_SCHEMA =
+    'address poolAddress, address attestorAddress, address[] refIds';
 const SCHEMA_UID =
-    '0x56a96e1de1496417fa2b49b4eecc994a672144488ca6d48236c2ffd758f44acc';
+    '0x233e16af3559cd70e7483d216a6274e91a9678111230453085d2c712d7819d42';
 
 export const encodeDataWithSchema = (
-    poolId: number,
+    poolAddress: string,
     shares: number,
+    attestorAddress: string,
     refIds: string[]
 ) => {
-    const schemaUid =
-        '0x424041413f6893c2f2e3e0e91ce9e26763840795b9c7fbb3866502e8d5c94677';
-    // const schemaEncoder = new SchemaEncoder(ATTESTATION_SCHEMA);
-    // return schemaEncoder.encodeData([
-    //     { name: 'poolId', value: poolId, type: 'uint256' },
-    //     { name: 'shares', value: shares, type: 'uint256' },
-    //     { name: 'refIds', value: [], type: 'address[]' },
-    // ]);
-
-    const schemaEncoder = new SchemaEncoder('uint256 eventId, uint8 voteIndex');
+    const schemaUid = SCHEMA_UID;
+    const schemaEncoder = new SchemaEncoder(ATTESTATION_SCHEMA);
     const encodedData = schemaEncoder.encodeData([
-        { name: 'eventId', value: 1, type: 'uint256' },
-        { name: 'voteIndex', value: 1, type: 'uint8' },
+        { name: 'poolAddress', value: poolAddress, type: 'address' },
+        // { name: 'shares', value: shares, type: 'uint256' },
+        { name: 'attestorAddress', value: attestorAddress, type: 'address' },
+        { name: 'refIds', value: [], type: 'address[]' },
     ]);
 
     return { schemaUid, encodedData };
@@ -121,7 +126,15 @@ export const attestAggregated = async (recipient: string) => {
     const eas = new EAS(easContractAddress);
     eas.connect(signer);
 
-    const { schemaUid, encodedData } = encodeDataWithSchema(1, 30, []);
+    const poolAddress = '0xa94634ef7d439a137162dd56f8e66cdb812d3d3c';
+    const attestorAddress = '0x7CdE8D9aFC02268C847fF43BA976e7E6020C1222';
+
+    const { schemaUid, encodedData } = encodeDataWithSchema(
+        poolAddress,
+        30,
+        attestorAddress,
+        []
+    );
 
     // await attestOffchain({ eas, signer, targetAddress, schemaUid, encodedData });
 
@@ -136,6 +149,7 @@ export const attestOnChain = async ({
     encodedData,
 }) => {
     eas.connect(signer);
+    console.log('attest on chain');
     const transaction = await eas.attest({
         schema: schemaUid,
         data: {
@@ -148,12 +162,12 @@ export const attestOnChain = async ({
 
     const results = await transaction.wait();
 
-    console.log('results', results, transaction.tx.hash);
+    const easscanAttestationUrl = easscanUrl + '/attestation/view/' + results;
+    console.log('results', results, easscanAttestationUrl, transaction.tx.hash);
 
     const txHash = transaction.tx.hash;
     const etherscanTxUrl = etherscanUrl + '/tx/' + txHash;
 
-    const easscanAttestationUrl = easscanUrl + '/attestation/view/' + results;
     return {
         easscanAttestationUrl,
         etherscanTxUrl,
