@@ -1,6 +1,5 @@
 'use client';
 import { Metadata } from "next";
-import { Button, Card } from "ui";
 import type { ISuccessResult } from "@worldcoin/idkit";
 import { CredentialType, IDKitWidget } from "@worldcoin/idkit";
 
@@ -25,13 +24,13 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from "next/link";
-import { WLD_ACTION_NAME } from "./webapp.config";
+import { ALCHEMY_API_KEY, WLD_ACTION_NAME, WLD_APP_ID } from "./webapp.config";
 import { useState } from "react";
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon, optimism, arbitrum, zora],
   [
-    alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+    alchemyProvider({ apiKey: ALCHEMY_API_KEY }),
     publicProvider()
   ]
 );
@@ -50,27 +49,7 @@ const wagmiConfig = createConfig({
 
 
 
-
-
-function Profile() {
-  const { address, isConnected } = useAccount()
-  const { connect } = useConnect({
-    connector: new InjectedConnector(),
-  })
-  const { disconnect } = useDisconnect()
-
-  if (isConnected)
-    return (
-      <div>
-        Connected to {address}
-        <button onClick={() => disconnect()}>Disconnect</button>
-      </div>
-    )
-  return <button onClick={() => connect()}>Connect Wallet</button>
-}
-
-
-export const WorldCoinWidget = ({ addProof }) => {
+const WorldCoinWidget = ({ addProof }) => {
   const onSuccess = (result: ISuccessResult) => {
     // This is where you should perform frontend actions once a user has been verified, such as redirecting to a new page
     window.alert("Successfully verified with World ID! Your nullifier hash is: " + result.nullifier_hash);
@@ -105,8 +84,8 @@ export const WorldCoinWidget = ({ addProof }) => {
 
   return (
     <IDKitWidget
-      action={process.env.WLD_ACTION_NAME!}
-      app_id={process.env.WLD_APP_ID!}
+      action={WLD_ACTION_NAME!}
+      app_id={WLD_APP_ID!}
       onSuccess={onSuccess}
       handleVerify={handleProof}
       credential_types={[CredentialType.Orb, CredentialType.Phone]}
@@ -122,7 +101,7 @@ export const WorldCoinWidget = ({ addProof }) => {
   )
 }
 
-export function Home() {
+function Home() {
 
 
   const [proofs, setProofs] = useState([]);
@@ -184,7 +163,7 @@ export function Home() {
           <div className="w-full max-w-xs">
             <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" for="receipent">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="receipent">
                   receipent
                 </label>
                 <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="receipent" type="text" placeholder="receipentaddress" />
